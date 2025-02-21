@@ -661,13 +661,10 @@ class OpenSearchDocumentStore:
 
         body: Dict[str, Any]
         if isinstance(custom_query, dict):
-            body = self._render_custom_query(
-                custom_query,
-                {
-                    "$query_embedding": query_embedding,
-                    "$filters": normalize_filters(filters),  # type:ignore
-                },
-            )
+            query_placeholders = {"$query_embedding": query_embedding}
+            if filters:
+                query_placeholders["$filters"] = normalize_filters(filters)
+            body = self._render_custom_query(custom_query, query_placeholders)
 
         else:
             body = {
